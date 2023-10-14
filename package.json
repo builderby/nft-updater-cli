@@ -1,28 +1,34 @@
 {
   "name": "nft-updater-cli",
   "version": "1.0.0",
-  "description": "A robust cli script to update the metadata of a NFT/pNFT or multiple NFT/pNFT's on Solana",
+  "description": "## Description",
   "main": "nft-updater-cli.js",
   "type": "module",
   "scripts": {
     "start": "nft-updater-cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/builderby/nft-updater-cli.git"
+  },
   "author": "Builderby",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/builderby/nft-updater-cli/issues"
+  },
+  "homepage": "https://github.com/builderby/nft-updater-cli#readme",
   "dependencies": {
     "@solana/web3.js": "^1.87.1",
     "axios": "^1.5.1",
-    "base64-js": "^1.5.1",
     "bs58": "^5.0.0",
-    "clear-cli": "^2.0.0",
     "dotenv": "^16.3.1",
     "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "inquirer": "^9.2.11",
-    "node-fetch": "^3.3.2",
-    "ora": "^7.0.1",
-    "readline-sync": "^1.4.10",
-    "sharp": "^0.32.6"
+    "or": "^0.2.0",
+    "path": "^0.12.7",
+    "sharp": "^0.32.6",
+    "windows-foreground-love": "^0.5.0"
   }
 }

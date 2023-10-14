@@ -4,14 +4,14 @@ import { Keypair, Transaction, Connection } from "@solana/web3.js";
 import ora from "ora";
 import dotenv from "dotenv";
 import inquirer from "inquirer";
-import fs from 'fs';
-import bs58 from 'bs58';
-import sharp from 'sharp';
-import path from 'path';
+import fs from "fs";
+import bs58 from "bs58";
+import sharp from "sharp";
+import path from "path";
 
 // Load environment variables from a .env file
 dotenv.config();
-dotenv.config({ path: './.env' }); // Load .env from the current directory
+dotenv.config({ path: "./.env" }); // Load .env from the current directory
 
 // Read API key and RPC node URL from environment variables
 const API_KEY = process.env.API_KEY;
@@ -23,16 +23,16 @@ async function compressImage(inputPath, outputPath, quality) {
     await sharp(inputPath)
       .jpeg({ quality }) // Adjust JPEG quality as needed
       .toFile(outputPath);
-    console.log('Image compressed successfully.');
+    console.log("Image compressed successfully.");
   } catch (error) {
-    console.error('Error compressing image:', error);
+    console.error("Error compressing image:", error);
   }
 }
 
 // Function to update the PRIVATE_KEY_BASE64 in .env file
 function updatePrivateKeyInEnv(privateKey) {
-  const envPath = './.env';
-  let envData = fs.readFileSync(envPath, 'utf8');
+  const envPath = "./.env";
+  let envData = fs.readFileSync(envPath, "utf8");
   // Create or update the PRIVATE_KEY_BASE64 variable in the .env file
   const newEnvData = envData.replace(
     /^PRIVATE_KEY_BASE64=.*$/m,
@@ -49,27 +49,32 @@ async function promptForKeys() {
     {
       type: "input",
       name: "privateKey",
-      message: "Enter your private key (in Solana Phantom format or keypair format):",
+      message:
+        "Enter your private key (in Solana Phantom format or keypair format):",
     },
   ]);
 
   // Check if the key is in the Solana Phantom wallet format
   let privateKey = keyResponse.privateKey;
-  if (privateKey.length === 88 && privateKey.startsWith("2") && /^[a-km-zA-HJ-NP-Z1-9]+$/.test(privateKey)) {
+  if (
+    privateKey.length === 88 &&
+    privateKey.startsWith("2") &&
+    /^[a-km-zA-HJ-NP-Z1-9]+$/.test(privateKey)
+  ) {
     // Convert the Solana wallet private key to BASE64
     try {
       const decodedKey = bs58.decode(privateKey);
-      privateKey = Buffer.from(decodedKey).toString('base64');
+      privateKey = Buffer.from(decodedKey).toString("base64");
     } catch (error) {
       console.error("Error converting private key:", error);
       process.exit(1);
     }
-  } else if (privateKey.startsWith('[') && privateKey.endsWith(']')) {
+  } else if (privateKey.startsWith("[") && privateKey.endsWith("]")) {
     // Parse the string into an array
     const privateKeyArray = JSON.parse(privateKey);
     if (Array.isArray(privateKeyArray) && privateKeyArray.length === 64) {
       // Convert the array private key to BASE64
-      privateKey = Buffer.from(privateKeyArray).toString('base64');
+      privateKey = Buffer.from(privateKeyArray).toString("base64");
     }
   }
 
@@ -81,7 +86,8 @@ async function promptForKeys() {
     {
       type: "confirm",
       name: "useCustomFeePayer",
-      message: "Do you want to use a different fee payer address and private key for the fee?",
+      message:
+        "Do you want to use a different fee payer address and private key for the fee?",
       default: false,
     },
   ]);
@@ -110,106 +116,120 @@ async function promptForKeys() {
 }
 
 // Update the NFT using the provided private key and fee payer information
-async function updateNFT(apiKey, parameters, privateKey, feePayerAddress, feePayerPrivateKey) {
+async function updateNFT(
+  apiKey,
+  parameters,
+  privateKey,
+  feePayerAddress,
+  feePayerPrivateKey
+) {
   const data = new FormData();
   const logData = {};
 
   // Get the current working directory
   const currentWorkingDirectory = process.cwd();
 
-    // Iterate through provided parameters
-    for (const key of Object.keys(parameters)) {
-      const value = parameters[key];
-      if (value !== undefined && value !== "") {
-        if (key === "imageFilePath") {
-          // Specify the output path for the compressed image
-          const extension = path.extname(value);
-          const fileName = path.basename(value, extension);
-          const outputPath = path.join(currentWorkingDirectory, `${fileName}_compressed.jpg`); // Adjust the format if needed
-  
-          // Compress the image and save it to the specified output path
-          await compressImage(value, outputPath, 90); // Adjust quality as needed
-  
-          // Add the compressed image to the form data
-          data.append('image', fs.createReadStream(outputPath));
-          logData[key] = `Compressed image (${outputPath})`;
-        } else if (key === "attributes" || key === "service_charge") {
-          // Check if the value is already a JSON string
-          if (typeof value === 'string') {
-            // Attempt to parse the JSON string into an object
-            try {
-              const parsedValue = JSON.parse(value);
-              data.append(key, JSON.stringify(parsedValue));
-              logData[key] = JSON.stringify(parsedValue);
-            } catch (error) {
-              // If parsing fails, treat it as a regular string
-              data.append(key, value);
-              logData[key] = value;
-            }
-          } else {
-            // If it's not a string, just append it as is
+  // Iterate through provided parameters
+  for (const key of Object.keys(parameters)) {
+    const value = parameters[key];
+    if (value !== undefined && value !== "") {
+      if (key === "imageFilePath") {
+        // Specify the output path for the compressed image
+        const extension = path.extname(value);
+        const fileName = path.basename(value, extension);
+        const outputPath = path.join(
+          currentWorkingDirectory,
+          `${fileName}_compressed.jpg`
+        ); // Adjust the format if needed
+
+        // Compress the image and save it to the specified output path
+        await compressImage(value, outputPath, 90); // Adjust quality as needed
+
+        // Add the compressed image to the form data
+        data.append("image", fs.createReadStream(outputPath));
+        logData[key] = `Compressed image (${outputPath})`;
+      } else if (key === "attributes" || key === "service_charge") {
+        // Check if the value is already a JSON string
+        if (typeof value === "string") {
+          // Attempt to parse the JSON string into an object
+          try {
+            const parsedValue = JSON.parse(value);
+            data.append(key, JSON.stringify(parsedValue));
+            logData[key] = JSON.stringify(parsedValue);
+          } catch (error) {
+            // If parsing fails, treat it as a regular string
             data.append(key, value);
             logData[key] = value;
           }
         } else {
-          // For other fields, simply append the value
+          // If it's not a string, just append it as is
           data.append(key, value);
           logData[key] = value;
         }
+      } else {
+        // For other fields, simply append the value
+        data.append(key, value);
+        logData[key] = value;
       }
     }
+  }
 
-   // Initialize a spinner for progress feedback
-   const spinner = ora("Sending update request to NFT API...").start();
+  // Initialize a spinner for progress feedback
+  const spinner = ora("Sending update request to NFT API...").start();
 
-   try {
-     // Send a POST request to the NFT API with the provided data
-     const response = await axios.request({
-       method: "post",
-       url: "https://api.shyft.to/sol/v2/nft/update",
-       headers: {
-         "x-api-key": apiKey,
-         ...data.getHeaders(),
-       },
-       data: data,
-     });
- 
-     // Display success message and proceed to signing the transaction
-     spinner.succeed("Update request successful! Signing transaction...");
- 
-     const encodedTransaction = response.data.result.encoded_transaction;
-     const feePayerPrivateKeyBase64 = feePayerPrivateKey
-       ? Buffer.from(feePayerPrivateKey, 'base64').toString('base64')
-       : null;
-     const txnSignature = await signAndSendTransaction(
-       encodedTransaction,
-       privateKey,
-       feePayerAddress,
-       feePayerPrivateKeyBase64
-     );
-     console.log("Transaction Signature:", txnSignature);
-   } catch (error) {
-     // Handle errors and display relevant information
-     spinner.fail(`Update request failed: ${error.message}`);
-     if (error.response) {
-       console.error(error.response.data);
-       console.error(error.response.status);
-       console.error(error.response.headers);
-     } else if (error.request) {
-       console.error(error.request);
-     } else {
-       console.error("Error", error.message);
-     }
-   }
- }
+  try {
+    // Send a POST request to the NFT API with the provided data
+    const response = await axios.request({
+      method: "post",
+      url: "https://api.shyft.to/sol/v2/nft/update",
+      headers: {
+        "x-api-key": apiKey,
+        ...data.getHeaders(),
+      },
+      data: data,
+    });
+
+    // Display success message and proceed to signing the transaction
+    spinner.succeed("Update request successful! Signing transaction...");
+
+    const encodedTransaction = response.data.result.encoded_transaction;
+    const feePayerPrivateKeyBase64 = feePayerPrivateKey
+      ? Buffer.from(feePayerPrivateKey, "base64").toString("base64")
+      : null;
+    const txnSignature = await signAndSendTransaction(
+      encodedTransaction,
+      privateKey,
+      feePayerAddress,
+      feePayerPrivateKeyBase64
+    );
+    console.log("Transaction Signature:", txnSignature);
+  } catch (error) {
+    // Handle errors and display relevant information
+    spinner.fail(`Update request failed: ${error.message}`);
+    if (error.response) {
+      console.error(error.response.data);
+      console.error(error.response.status);
+      console.error(error.response.headers);
+    } else if (error.request) {
+      console.error(error.request);
+    } else {
+      console.error("Error", error.message);
+    }
+  }
+}
 
 // Function to sign and send a transaction
-async function signAndSendTransaction(encodedTransaction, fromPrivateKeyBase64, feePayerAddress, feePayerPrivateKeyBase64) {
+async function signAndSendTransaction(
+  encodedTransaction,
+  fromPrivateKeyBase64,
+  feePayerAddress,
+  feePayerPrivateKeyBase64
+) {
   try {
     const connection = new Connection(RPC_NODE, "confirmed");
     const feePayer = feePayerAddress
-      ? Keypair.fromSecretKey(Buffer.from(feePayerPrivateKeyBase64, 'base64'))
-      : Keypair.fromSecretKey(Buffer.from(fromPrivateKeyBase64, 'base64'));
+      ? Keypair.fromSecretKey(Buffer.from(feePayerPrivateKeyBase64, "base64"))
+      : Keypair.fromSecretKey(Buffer.from(fromPrivateKeyBase64, "base64"));
     const recoveredTransaction = Transaction.from(
       Buffer.from(encodedTransaction, "base64")
     );
@@ -229,7 +249,7 @@ async function updateNFTsFromJson(jsonFilePath) {
   try {
     // Read the JSON file as a string and parse it to an array
     const rawData = await fs.promises.readFile(jsonFilePath);
-    const nftDataArray = JSON.parse(rawData.toString('utf-8'));
+    const nftDataArray = JSON.parse(rawData.toString("utf-8"));
 
     // Iterate through each NFT data and update them
     for (const nftData of nftDataArray) {
@@ -318,12 +338,13 @@ async function promptForSingleUpdate() {
     },
     {
       name: "fee_payer_address",
-      message: "Enter the fee payer address that should pay the fee to update (optional, leave blank if update_authority_address should pay the fee):",
+      message:
+        "Enter the fee payer address that should pay the fee to update (optional, leave blank if update_authority_address should pay the fee):",
       default: "",
     },
   ];
 
-// Prompt the user for NFT update information
+  // Prompt the user for NFT update information
   const answers = await inquirer.prompt(questions);
   await updateNFT(API_KEY, answers, PRIVATE_KEY_BASE64);
 }
@@ -352,7 +373,8 @@ async function run() {
     {
       when: (answers) => answers.updateMode === "Single",
       name: "keys",
-      message: "Do you want to enter your private keys now? We do not store them anywhere but your local machine in the .env file so the script can use them. We will use these keys to sign the transaction. They are needed to update the NFT.",
+      message:
+        "Do you want to enter your private keys now? We do not store them anywhere but your local machine in the .env file so the script can use them. We will use these keys to sign the transaction. They are needed to update the NFT.",
       type: "confirm",
       default: true,
     },
@@ -360,8 +382,13 @@ async function run() {
 
   if (updateMode === "Single") {
     if (keys) {
-      const { privateKey, feePayerAddress, feePayerPrivateKey } = await promptForKeys();
-      await promptForSingleUpdate(privateKey, feePayerAddress, feePayerPrivateKey);
+      const { privateKey, feePayerAddress, feePayerPrivateKey } =
+        await promptForKeys();
+      await promptForSingleUpdate(
+        privateKey,
+        feePayerAddress,
+        feePayerPrivateKey
+      );
     } else {
       await promptForSingleUpdate();
     }
