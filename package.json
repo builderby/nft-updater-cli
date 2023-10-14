@@ -5,7 +5,7 @@
   "main": "nft-updater-cli.js",
   "type": "module",
   "scripts": {
-    "start": "nft-updater-cli.js",
+    "start": "node nft-updater-cli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
