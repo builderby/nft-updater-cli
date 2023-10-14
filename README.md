@@ -26,6 +26,7 @@ git clone https://github.com/builderby/nft-updater-cli.git
 cd nft-updater-cli
 npm install
 ```
+- Rename the `.env.example` to `.env` in the root directory
 
 ## Usage
 
