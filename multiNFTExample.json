@@ -1,0 +1,74 @@
+[
+  {
+    "token_address": "5YStaeE61dTQpX63MJ4EKhv6GsGeUHGS4JUNDtufMy4P",
+    "network": "mainnet-beta",
+    "update_authority_address": "AJJxtoco5xsH9tTNr2VoGQYsiif467SoSkMx4Y3nMRii",
+    "attributes": [
+      {
+        "trait_type": "BG",
+        "value": "SOUNDSLIKE"
+      },
+      {
+        "trait_type": "Body",
+        "value": "SOUNDSLIKE"
+      },
+      {
+        "trait_type": "Shirt",
+        "value": "SOUNDSLIKE"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "SOUNDSLIKE"
+      },
+      {
+        "trait_type": "Hat",
+        "value": "SOUNDSLIKE"
+      },
+      {
+        "trait_type": "Eyewear",
+        "value": "SOUNDSLIKE"
+      },
+      {
+        "trait_type": "Mouth",
+        "value": "SOUNDSLIKE"
+      }
+    ],
+    "imageFilePath": "C:/Users/mflan/Downloads/updateBears/IMG_1050.png"
+  },
+  {
+    "token_address": "Bfdt7m6KgAHpEwQcpNSMCnPbANq3uJMvjWheB8gzAJjK",
+    "network": "mainnet-beta",
+    "update_authority_address": "AJJxtoco5xsH9tTNr2VoGQYsiif467SoSkMx4Y3nMRii",
+    "attributes": [
+      {
+        "trait_type": "BG",
+        "value": "KINGJULIAN"
+      },
+      {
+        "trait_type": "Body",
+        "value": "KINGJULIAN"
+      },
+      {
+        "trait_type": "Shirt",
+        "value": "KINGJULIAN"
+      },
+      {
+        "trait_type": "Eyes",
+        "value": "KINGJULIAN"
+      },
+      {
+        "trait_type": "Hat",
+        "value": "KINGJULIAN"
+      },
+      {
+        "trait_type": "Eyewear",
+        "value": "KINGJULIAN"
+      },
+      {
+        "trait_type": "Mouth",
+        "value": "KINGJULIAN"
+      }
+    ],
+    "imageFilePath": "C:/Users/mflan/Downloads/updateBears/IMG_1096.png"
+  }
+]
