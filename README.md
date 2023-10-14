@@ -16,7 +16,7 @@ NFT Updater CLI allows you to update NFT metadata on the Solana blockchain. It p
 - Node.js v18+
 - npm or yarn
 - Shyft API key
-- Private key in base64 format
+- Private key of the NFT/s Update Authority in base64 format (can be converted from Solana Phantom wallet private key in the script)
 - RPC node URL from Shyft [Shyft](https://shyft.to/get-api-key)
 
 ## Installation
@@ -29,7 +29,9 @@ npm install
 
 ## Usage
 
-- Ensure you have a Shyft API key, RPC node URL and set up in the .env file. You can get a free API key from [Shyft](https://shyft.to/get-api-key). This is required to interact with the Shyft API. You will also need a private key in base64 format. You can use your Solana Phantom wallet private key and convert it with the script.
+- Ensure you have a Shyft API key, RPC node URL and set up in the .env file. You can get a free API key from [Shyft](https://shyft.to/get-api-key). This is required to interact with the Shyft API. You will also need a private key in base64 format. You can use your Solana Phantom wallet private key and convert it with the script or even use a solana keypair in the script and it will also convert it to base64 for you. if you dont want to do that just get a base64 format of your private key and paste it in the .env file. When it asks to add your private key in base64 format just press N for No and it will use the one in the .env file. You will have to do the same for the Fee Payer private key if you deide to not use the update authority and use a fee payer instead.
+
+
 
 1. **Single NFT Update**: Update metadata for a single NFT.
 2. **Multiple NFTs Update**: Update metadata for multiple NFTs by providing a JSON file.
