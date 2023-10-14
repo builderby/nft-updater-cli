@@ -57,7 +57,7 @@ npm start
 
 ### Update Multiple NFTs
 
-Provide a JSON file path when prompted after selecting "Multiple". We have included an example JSON file in the root directory. Named multiNFTExample.json, it contains two NFTs to update.
+Provide a JSON file path when prompted after selecting "Multiple". We have included an example JSON file in the root directory named multiNFTExample.json, it contains two NFTs to update as an example.
 
 
 ## API Documentation
