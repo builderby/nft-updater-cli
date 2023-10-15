@@ -14,9 +14,9 @@ dotenv.config();
 dotenv.config({ path: "./.env" }); // Load .env from the current directory
 
 // Read API key and RPC node URL from environment variables
-const API_KEY = process.env.API_KEY;
-const RPC_NODE = process.env.RPC_NODE;
-const PRIVATE_KEY_BASE64 = process.env.PRIVATE_KEY_BASE64;
+let API_KEY = process.env.API_KEY;
+let RPC_NODE = process.env.RPC_NODE;
+let PRIVATE_KEY_BASE64 = process.env.PRIVATE_KEY_BASE64;
 
 async function compressImage(inputPath, outputPath, quality) {
   try {
@@ -52,6 +52,8 @@ function updatePrivateKeyInEnv(privateKey) {
     `PRIVATE_KEY_BASE64=${privateKey}`
   );
   fs.writeFileSync(envPath, newEnvData);
+  // Update the PRIVATE_KEY_BASE64 variable in the script
+  PRIVATE_KEY_BASE64 = privateKey;
 }
 
 async function promptForKeys() {
