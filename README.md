@@ -19,7 +19,7 @@ NFT Updater CLI allows you to update NFT metadata on the Solana blockchain. It p
 - npm or yarn
 - Shyft API key
 - Private key of the NFT/s Update Authority in base64 format (can be converted from Solana Phantom wallet private key in the script)
-- RPC node URL from Shyft [Shyft](https://shyft.to/get-api-key)
+- RPC node URL from [Shyft](https://shyft.to/get-api-key)
 
 ## Installation
 
