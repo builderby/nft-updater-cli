@@ -67,7 +67,7 @@ Provide a JSON file path when prompted after selecting "Multiple". We have inclu
 
 ## API Documentation
 
-Refer to the Shyft API documentation for [updating NFT metadata](https://docs.shyft.to/start-hacking/).
+Refer to the Shyft API documentation for [updating NFT metadata](https://docs.shyft.to/start-hacking/nft#update-v2).
 
 You can update the following NFT attributes:
 
