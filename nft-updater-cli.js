@@ -54,12 +54,11 @@ async function promptForKeys() {
     },
   ]);
 
-  // Check if the key is in the Solana Phantom wallet format
+  // Check if the key is in the Solana Phantom wallet format or keypair format
   let privateKey = keyResponse.privateKey;
   if (
     privateKey.length === 88 &&
-    privateKey.startsWith("2") &&
-    /^[a-km-zA-HJ-NP-Z1-9]+$/.test(privateKey)
+    /^[0-9a-zA-Z]+$/.test(privateKey)
   ) {
     // Convert the Solana wallet private key to BASE64
     try {
