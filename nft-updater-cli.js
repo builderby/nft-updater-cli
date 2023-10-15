@@ -20,15 +20,28 @@ const PRIVATE_KEY_BASE64 = process.env.PRIVATE_KEY_BASE64;
 
 async function compressImage(inputPath, outputPath, quality) {
   try {
-    await sharp(inputPath)
-      .jpeg({ quality }) // Adjust JPEG quality as needed
-      .toFile(outputPath);
+    const image = sharp(inputPath);
+    const metadata = await image.metadata();
+
+    if (metadata.format === "jpeg" || metadata.format === "jpg") {
+      await image.jpeg({ quality }).toFile(outputPath);
+    } else if (metadata.format === "png") {
+      await image.png({ quality }).toFile(outputPath);
+    } else if (metadata.format === "gif") {
+      await image.gif({ quality }).toFile(outputPath);
+    } else {
+      throw new Error(`Unsupported image format: ${metadata.format}`);
+    }
+
     console.log("Image compressed successfully.");
   } catch (error) {
-    console.error("Error compressing image:", error);
+    // Log the error and throw a user-friendly message
+    console.error("Error compressing image:", error.message);
+    throw new Error(
+      "Failed to compress the image. Please ensure the file path is correct and the image format is supported (jpeg, png, gif) and try again."
+    );
   }
 }
-
 // Function to update the PRIVATE_KEY_BASE64 in .env file
 function updatePrivateKeyInEnv(privateKey) {
   const envPath = "./.env";
@@ -56,10 +69,7 @@ async function promptForKeys() {
 
   // Check if the key is in the Solana Phantom wallet format or keypair format
   let privateKey = keyResponse.privateKey;
-  if (
-    privateKey.length === 88 &&
-    /^[0-9a-zA-Z]+$/.test(privateKey)
-  ) {
+  if (privateKey.length === 88 && /^[0-9a-zA-Z]+$/.test(privateKey)) {
     // Convert the Solana wallet private key to BASE64
     try {
       const decodedKey = bs58.decode(privateKey);
@@ -112,6 +122,32 @@ async function promptForKeys() {
   }
 
   return { privateKey, feePayerAddress, feePayerPrivateKey };
+}
+
+async function apiRequest(data, apiKey, maxRetries = 3) {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const response = await axios.request({
+        method: "post",
+        url: "https://api.shyft.to/sol/v2/nft/update",
+        headers: {
+          "x-api-key": apiKey,
+          ...data.getHeaders(),
+        },
+        data: data,
+      });
+      return response;
+    } catch (error) {
+      console.error(
+        `API request failed (attempt ${attempt}/${maxRetries}):`,
+        error.message
+      );
+      // If this was the last attempt, throw the error
+      if (attempt === maxRetries) throw error;
+      // Otherwise, wait for a short delay before retrying
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
 }
 
 // Update the NFT using the provided private key and fee payer information
@@ -177,42 +213,55 @@ async function updateNFT(
   const spinner = ora("Sending update request to NFT API...").start();
 
   try {
-    // Send a POST request to the NFT API with the provided data
-    const response = await axios.request({
-      method: "post",
-      url: "https://api.shyft.to/sol/v2/nft/update",
-      headers: {
-        "x-api-key": apiKey,
-        ...data.getHeaders(),
-      },
-      data: data,
-    });
+    // Make an API request to update the NFT
+    const response = await apiRequest(data, apiKey);
 
-    // Display success message and proceed to signing the transaction
-    spinner.succeed("Update request successful! Signing transaction...");
+    // Check if the response has the expected format and data
+    if (
+      response.data &&
+      response.data.result &&
+      response.data.result.encoded_transaction
+    ) {
+      // Display success message and proceed to signing the transaction
+      spinner.succeed("Update request successful! Signing transaction...");
 
-    const encodedTransaction = response.data.result.encoded_transaction;
-    const feePayerPrivateKeyBase64 = feePayerPrivateKey
-      ? Buffer.from(feePayerPrivateKey, "base64").toString("base64")
-      : null;
-    const txnSignature = await signAndSendTransaction(
-      encodedTransaction,
-      privateKey,
-      feePayerAddress,
-      feePayerPrivateKeyBase64
-    );
-    console.log("Transaction Signature:", txnSignature);
+      const encodedTransaction = response.data.result.encoded_transaction;
+      const feePayerPrivateKeyBase64 = feePayerPrivateKey
+        ? Buffer.from(feePayerPrivateKey, "base64").toString("base64")
+        : null;
+      const txnSignature = await signAndSendTransaction(
+        encodedTransaction,
+        privateKey,
+        feePayerAddress,
+        feePayerPrivateKeyBase64
+      );
+      console.log("Transaction Signature:", txnSignature);
+    } else {
+      // Handle unexpected response format
+      throw new Error("Unexpected response format from the API.");
+    }
   } catch (error) {
     // Handle errors and display relevant information
-    spinner.fail(`Update request failed: ${error.message}`);
+    spinner.fail("Update request failed.");
+
+    // Provide a clear user message
+    console.error(
+      "An error occurred while trying to update the NFT. Please try again later."
+    );
+
+    // Log detailed error information for debugging
     if (error.response) {
-      console.error(error.response.data);
-      console.error(error.response.status);
-      console.error(error.response.headers);
+      console.error("Detailed error information:");
+      console.error("Data:", error.response.data);
+      console.error("Status:", error.response.status);
+      console.error("Headers:", error.response.headers);
     } else if (error.request) {
+      console.error(
+        "No response received from the API. Details of the request that was sent:"
+      );
       console.error(error.request);
     } else {
-      console.error("Error", error.message);
+      console.error("Error message:", error.message);
     }
   }
 }
