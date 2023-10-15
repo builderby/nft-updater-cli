@@ -1,6 +1,8 @@
 
 # NFT Updater CLI
 
+![Main Image](images/main.png)
+
 ## Description
 
 NFT Updater CLI allows you to update NFT metadata on the Solana blockchain. It provides a user-friendly interface for updating various attributes of an NFT such as name, symbol, description, attributes, royalty, and more, using the Shyft API.
@@ -47,6 +49,8 @@ PRIVATE_KEY_BASE64=YOUR_PRIVATE_KEY_IN_BASE64_FORMAT
 ```
 
 ### Update a Single NFT
+
+![Single Update Image](images/singleupdate.png)
 
 Run the CLI and select "Single" when prompted:
 
