@@ -42,7 +42,7 @@ npm start
 
 ### Environment Variables
 
-Rename `.env.example` file in the root directory and add add your Shyft API key, RPC node URL, and private key in base64 format. Alternatively you can use your Solana Phantom wallet private key and convert it with the script.
+Rename `.env.example` file in the root directory and add your Shyft API key, RPC node URL, and private key in base64 format. Alternatively you can use your Solana Phantom wallet private key and convert it with the script.
 
 ```env
 API_KEY=YOUR_SHYFT_API_KEY
